@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: fedu
+
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:10MB}
+      max-request-size: ${MAX_UPLOAD_SIZE:10MB}
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/trueconnect
+    username: postgres
+    password: 1234$
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 270000
+      keepalive-time: 120000
+      minimum-idle: 2
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_batch_fetch_size: 50
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: baongocnghech04@gmail.com
+    password: qrhdlhoqvziiwutc
+    from: baongocnghech04@gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+openapi:
+  service:
+    api-docs: fedu
+    serverUrl: http://localhost:${server.port}
+    serverName: FEdu System
+    title: FEdu System
+    version: 1.0.0
+
+jwt:
+  expiryMinute: 15
+  expiryHour: 1
+  expiryDay: 30
+  accessKey: dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWFjY2Vzcy10b2tlbi1rZXktZm9yLWZlZHU=
+  refreshKey: dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLXJlZnJlc2gtdG9rZW4ta2V5LWZvci1mZWR1
+  resetKey: dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLXJlc2V0LXRva2VuLWtleS1mb3ItZmVkdQ==
+
+app:
+  frontend-url: http://localhost:5173
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost,http://127.0.0.1,http://localhost:5173,http://localhost:3000,http://localhost:5174,http://localhost:5175}
+
+cloudinary:
+  cloud-name: djkzentjq
+  api-key: 633384561622674
+  api-secret: kTELy4Elo9_US6ocRTADX0SLOis
+  folder: fedu
+
