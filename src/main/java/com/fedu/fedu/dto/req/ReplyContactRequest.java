@@ -13,4 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class ReplyContactRequest {
     @NotBlank(message = "Message response cannot be blank")
     String messageResponse;
+
+    @NotBlank(message = "Sender email cannot be blank")
+    String senderEmail;
 }

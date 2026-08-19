@@ -23,6 +23,7 @@ import com.fedu.fedu.dto.req.ContactRequest;
 import com.fedu.fedu.service.MailService;
 import com.fedu.fedu.entity.ContactMessage;
 import com.fedu.fedu.repository.ContactMessageRepository;
+import com.fedu.fedu.service.SystemConfigService;
 import com.fedu.fedu.utils.enums.ContactStatus;
 
 @Slf4j
@@ -35,6 +36,7 @@ public class PublicAboutServiceImpl implements PublicAboutService {
     private final SubjectRepository subjectRepository;
     private final MailService mailService;
     private final ContactMessageRepository contactMessageRepository;
+    private final SystemConfigService systemConfigService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -52,7 +54,10 @@ public class PublicAboutServiceImpl implements PublicAboutService {
                 .build();
         contactMessageRepository.save(contactMessage);
 
-        String emailContent = String.format(
+        String adminEmail = systemConfigService.getSettingValue("MAIL_SENDER_EMAIL", "default@example.com");
+
+        // 1. Send email to Admin
+        String adminEmailContent = String.format(
                 "<h3>Tin nhắn liên hệ mới từ FEdu</h3>" +
                         "<p><b>Họ tên:</b> %s</p>" +
                         "<p><b>Email:</b> %s</p>" +
@@ -65,11 +70,28 @@ public class PublicAboutServiceImpl implements PublicAboutService {
                 contactRequest.getMessage());
 
         try {
-            mailService.sendEmail("quan12345lmao@gmail.com", "FEdu Contact: " + contactRequest.getSubject(),
-                    emailContent, null);
-            log.info("Contact email sent successfully to baongocnghech04@gmail.com");
+            mailService.sendEmail(adminEmail, "FEdu Contact: " + contactRequest.getSubject(),
+                    adminEmailContent, null);
+            log.info("Contact email sent successfully to admin: {}", adminEmail);
         } catch (Exception e) {
-            log.error("Failed to send contact email to baongocnghech04@gmail.com, error: {}", e.getMessage());
+            log.error("Failed to send contact email to admin: {}, error: {}", adminEmail, e.getMessage());
+        }
+
+        // 2. Send confirmation email to User
+        String userEmailContent = String.format(
+                "<h3>Xin chào %s,</h3>" +
+                        "<p>Chúng tôi đã nhận được tin nhắn liên hệ của bạn với tiêu đề: <b>%s</b></p>" +
+                        "<p>Đội ngũ của chúng tôi sẽ xem xét và phản hồi lại bạn sớm nhất có thể.</p>" +
+                        "<p>Trân trọng,<br>Đội ngũ FEdu</p>",
+                contactRequest.getName(),
+                contactRequest.getSubject());
+
+        try {
+            mailService.sendEmail(contactRequest.getEmail(), "Xác nhận đã nhận liên hệ: " + contactRequest.getSubject(),
+                    userEmailContent, null);
+            log.info("Confirmation email sent successfully to user: {}", contactRequest.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send confirmation email to user: {}, error: {}", contactRequest.getEmail(), e.getMessage());
         }
     }
 

@@ -55,7 +55,7 @@ public class AdminContactServiceImpl implements AdminContactService {
         );
 
         try {
-            mailService.sendEmail(contactMessage.getEmail(), "Phản hồi liên hệ từ FEdu", emailContent, null);
+            mailService.sendEmail(request.getSenderEmail(), contactMessage.getEmail(), "Phản hồi liên hệ từ FEdu", emailContent, null);
             log.info("Reply email sent to {}", contactMessage.getEmail());
         } catch (Exception e) {
             log.error("Failed to send reply email to {}", contactMessage.getEmail(), e);
